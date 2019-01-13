@@ -41,7 +41,7 @@ class User{
         $stmt = $this->conn->prepare( $query );
     
         //**sanitize
-        $this->email=htmlspecialchars(strip_tags($this->email), ENT_QUOTES);
+        $this->email=htmlspecialchars(strip_tags($this->email), ENT_QUOTES, 'UTF-8');
     
         //**bind given email value
         $stmt->bindParam(1, $this->email);
@@ -97,15 +97,15 @@ class User{
         $stmt = $this->conn->prepare($query);
     
         //**sanitize
-        $this->firstname=htmlspecialchars(strip_tags($this->firstname));
-        $this->lastname=htmlspecialchars(strip_tags($this->lastname));
-        $this->email=htmlspecialchars(strip_tags($this->email));
-        $this->contact_number=htmlspecialchars(strip_tags($this->contact_number));
-        $this->address=htmlspecialchars(strip_tags($this->address));
-        $this->password=htmlspecialchars(strip_tags($this->password));
-        $this->access_level=htmlspecialchars(strip_tags($this->access_level));
-        $this->access_code=htmlspecialchars(strip_tags($this->access_code));
-        $this->status=htmlspecialchars(strip_tags($this->status));
+        $this->firstname=htmlspecialchars(strip_tags($this->firstname), ENT_QUOTES, 'UTF-8');
+        $this->lastname=htmlspecialchars(strip_tags($this->lastname), ENT_QUOTES, 'UTF-8');
+        $this->email=htmlspecialchars(strip_tags($this->email), ENT_QUOTES, 'UTF-8');
+        $this->contact_number=htmlspecialchars(strip_tags($this->contact_number), ENT_QUOTES, 'UTF-8');
+        $this->address=htmlspecialchars(strip_tags($this->address), ENT_QUOTES, 'UTF-8');
+        $this->password=htmlspecialchars(strip_tags($this->password), ENT_QUOTES, 'UTF-8');
+        $this->access_level=htmlspecialchars(strip_tags($this->access_level), ENT_QUOTES, 'UTF-8');
+        $this->access_code=htmlspecialchars(strip_tags($this->access_code), ENT_QUOTES, 'UTF-8');
+        $this->status=htmlspecialchars(strip_tags($this->status), ENT_QUOTES, 'UTF-8');
     
         //**bind the values
         $stmt->bindParam(':firstname', $this->firstname);
