@@ -59,7 +59,7 @@ if($_POST){
 }
  
 //**include page header HTML
-include_once "layout_header.php";
+include_once "templates/layout_header.php";
  
 echo "<div class='col-sm-6 col-md-4 col-md-offset-4'>";
  
@@ -90,8 +90,8 @@ echo "<div class='col-sm-6 col-md-4 col-md-offset-4'>";
     echo "<div class='account-wall'>";
         echo "<div id='my-tab-content' class='tab-content'>";
             echo "<div class='tab-pane active' id='login'>";
-                echo "<img class='profile-img' src='" . $actual_link .  "/assets/img/login-icon.svg'>";
-                echo "<form class='form-signin' action='" . htmlspecialchars($_SERVER["PHP_SELF"]) . "' method='post'>";
+                echo "<img class='profile-img' src='" . $home_url .  "/assets/img/login-icon.svg'>";
+                echo "<form class='form-signin' action='" . htmlspecialchars($_SERVER["PHP_SELF"], ENT_QUOTES, 'UTF-8') . "' method='post'>";
                     echo "<input type='text' name='email' class='form-control' placeholder='Email' required autofocus />";
                     echo "<input type='password' name='password' class='form-control' placeholder='Password' required />";
                     echo "<input type='submit' class='btn btn-lg btn-primary btn-block' value='Log In' />";
@@ -103,5 +103,5 @@ echo "<div class='col-sm-6 col-md-4 col-md-offset-4'>";
 echo "</div>";
  
 //**footer HTML and JavaScript codes
-include_once "layout_footer.php";
+include_once "templates/layout_footer.php";
 ?>
