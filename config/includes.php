@@ -10,6 +10,9 @@ date_default_timezone_set('America/New_York');
  
 //**home page url
 $home_url="http://localhost:90/jplandmd/"; //** Change this setting for your specific env */
+
+//** On Prod Server */
+// $home_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['SERVER_NAME'] . "/";
  
 //**page given in URL parameter, default page is one
 $page = isset($_GET['page']) ? $_GET['page'] : 1;
