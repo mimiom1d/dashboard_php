@@ -9,7 +9,7 @@ session_start();
 date_default_timezone_set('America/New_York');
  
 //**home page url
-$home_url="http://localhost:90/jplandmd/"; //** Change this setting for your specific env */
+$home_url="http://localhost:90/jplangmd/"; //** Change this setting for your specific env */
 
 //** On Prod Server */
 // $home_url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['SERVER_NAME'] . "/";
