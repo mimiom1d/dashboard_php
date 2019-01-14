@@ -11,7 +11,8 @@ include_once "login_checker.php";
 //**include classes
 include_once 'config/database.php';
 include_once 'objects/user.php';
-include_once "assets/php/utils.php";
+include_once "libs/php/utils.php";
+include_once "libs/php/functions.php";
  
 //**include page header HTML
 include_once "templates/layout_header.php";
@@ -30,22 +31,22 @@ if($_POST){
     $utils = new Utils();
  
     //**set user email to detect if it already exists
-    $user->email=htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
+    $email_pre = safeinputs($_POST['email']);
  
     //**check if email already exists
-    if($user->emailExists()){
+    if($user->emailExists($email_pre)){
         echo "<div class='alert alert-danger'>";
             echo "The email you specified is already registered. Please try again or <a href='{$home_url}login'>login.</a>";
         echo "</div>";
     }
- 
+    //**  check all the validations and then try create()
     else{
-        $firstname_pre = htmlspecialchars($_POST['firstname'], ENT_QUOTES, 'UTF-8');
-        $lastname_pre = htmlspecialchars($_POST['lastname'], ENT_QUOTES, 'UTF-8');
-        $email_pre = htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8');
-        $phone_pre = htmlspecialchars($_POST['contact_number'], ENT_QUOTES, 'UTF-8');
-        $address_pre = htmlspecialchars($_POST['address'], ENT_QUOTES, 'UTF-8');
-        $password_pre = htmlspecialchars($_POST['password'], ENT_QUOTES, 'UTF-8');
+        $firstname_pre = safeinputs($_POST['firstname']);
+        $lastname_pre = safeinputs($_POST['lastname']);
+        // $email_pre = safeinputs($_POST['email']); // ** Its already defined above
+        $phone_pre = safeinputs($_POST['contact_number']);
+        $address_pre = safeinputs($_POST['address']);
+        $password_pre = safeinputs($_POST['password']);
 
         if(!$user->validName($firstname_pre) || !$user->validName($lastname_pre)){
             echo "<div class='alert alert-danger'>";
@@ -70,41 +71,55 @@ if($_POST){
             $user->lastname = $lastname_pre;
             $user->email = $email_pre;
             $user->contact_number = $phone_pre;
-            $user->addresse = $address_pre;
+            $user->address = $address_pre;
             $user->password = $password_pre;
             $user->access_level='Customer';
-            $user->status=0;
+            $user->status=1;
             //**access code for email verification
-            $access_code=$utils->getToken();
-            $user->access_code=$access_code;
-            
-            //**create the user
+            // $access_code=$utils->getToken();
+            // $user->access_code=$access_code;
+            echo $user->address;
+            //** create user for testing; comment this after done with testing */
+            //** create the user
             if($user->create()){
             
-                //**send confimation email
-                $send_to_email=$_POST['email'];
-                $body="Hi {$send_to_email}.<br /><br />";
-                $body.="Please click the following link to verify your email and login: {$home_url}verify/?access_code={$access_code}";
-                $subject="Verification Email";
+                echo "<div class='alert alert-info'>";
+                    echo "Successfully registered. <a href='{$home_url}login'>Please login</a>.";
+                echo "</div>";
             
-                if($utils->sendEmailViaPhpMail($send_to_email, $subject, $body)){
-                    echo "<div class='alert alert-success'>
-                        Verification link was sent to your email. Click that link to login.
-                    </div>";
-                }
-            
-                else{
-                    echo "<div class='alert alert-danger'>
-                        User was created but unable to send verification email. Please contact admin.
-                    </div>";
-                }
-            
-                //**empty posted values
+                // empty posted values
                 $_POST=array();
             
             }else{
                 echo "<div class='alert alert-danger' role='alert'>Unable to register. Please try again.</div>";
             }
+            //**create the user with email verification
+            // if($user->create()){
+            
+            //     //**send confimation email
+            //     $send_to_email=$_POST['email'];
+            //     $body="Hi {$send_to_email}.<br /><br />";
+            //     $body.="Please click the following link to verify your email and login: {$home_url}verify/?access_code={$access_code}";
+            //     $subject="Verification Email";
+            
+            //     if($utils->sendEmailViaPhpMail($send_to_email, $subject, $body)){
+            //         echo "<div class='alert alert-success'>
+            //             Verification link was sent to your email. Click that link to login.
+            //         </div>";
+            //     }
+            
+            //     else{
+            //         echo "<div class='alert alert-danger'>
+            //             User was created but unable to send verification email. Please contact admin.
+            //         </div>";
+            //     }
+            
+            //     //**empty posted values
+            //     $_POST=array();
+            
+            // }else{
+            //     echo "<div class='alert alert-danger' role='alert'>Unable to register. Please try again.</div>";
+            // }
         }
     }
 }
@@ -115,27 +130,27 @@ if($_POST){
  
         <tr>
             <td class='width-30-percent'>Firstname</td>
-            <td><input type='text' name='firstname' class='form-control' required value="<?php echo isset($_POST['firstname']) ? htmlspecialchars($_POST['firstname'], ENT_QUOTES, 'UTF-8') : "";  ?>" /></td>
+            <td><input type='text' name='firstname' class='form-control' required value="<?php echo isset($_POST['firstname']) ? safeinputs($_POST['firstname']) : "";  ?>" /></td>
         </tr>
  
         <tr>
             <td>Lastname</td>
-            <td><input type='text' name='lastname' class='form-control' required value="<?php echo isset($_POST['lastname']) ? htmlspecialchars($_POST['lastname'], ENT_QUOTES, 'UTF-8') : "";  ?>" /></td>
+            <td><input type='text' name='lastname' class='form-control' required value="<?php echo isset($_POST['lastname']) ? safeinputs($_POST['lastname']) : "";  ?>" /></td>
         </tr>
  
         <tr>
             <td>Email</td>
-            <td><input type='email' name='email' class='form-control' required value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email'], ENT_QUOTES, 'UTF-8') : "";  ?>" /></td>
+            <td><input type='email' name='email' class='form-control' required value="<?php echo isset($_POST['email']) ? safeinputs($_POST['email']) : "";  ?>" /></td>
         </tr>
         
         <tr>
             <td>Contact Number</td>
-            <td><input type='text' name='contact_number' class='form-control' required value="<?php echo isset($_POST['contact_number']) ? htmlspecialchars($_POST['contact_number'], ENT_QUOTES, 'UTF-8') : "";  ?>" /></td>
+            <td><input type='text' name='contact_number' class='form-control' required value="<?php echo isset($_POST['contact_number']) ? safeinputs($_POST['contact_number']) : "";  ?>" /></td>
         </tr>
  
         <tr>
             <td>Address</td>
-            <td><textarea name='address' class='form-control'><?php echo isset($_POST['address']) ? htmlspecialchars($_POST['address'], ENT_QUOTES, 'UTF-8') : "";  ?></textarea></td>
+            <td><textarea name='address' class='form-control'><?php echo isset($_POST['address']) ? safeinputs($_POST['address']) : "";  ?></textarea></td>
         </tr>
  
  

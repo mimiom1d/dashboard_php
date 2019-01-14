@@ -10,6 +10,7 @@ if($num>0){
         echo "<th>Lastname</th>";
         echo "<th>Email</th>";
         echo "<th>Contact Number</th>";
+        echo "<th>Address</th>";
         echo "<th>Access Level</th>";
     echo "</tr>";
  
@@ -23,6 +24,7 @@ if($num>0){
             echo "<td>{$lastname}</td>";
             echo "<td>{$email}</td>";
             echo "<td>{$contact_number}</td>";
+            echo "<td>" . htmlspecialchars_decode($address) . "</td>";
             echo "<td>{$access_level}</td>";
         echo "</tr>";
         }

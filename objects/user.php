@@ -27,13 +27,29 @@ class User{
     public function __construct($conn){
         $this->conn = $conn;
     }
+    function safeinputs($string){
+        return trim(htmlspecialchars($string, ENT_QUOTES, "UTF-8"));
+    }
+    function showAddress(){
+        // return $this->address;
 
+        $query = "SELECT address from $this->table_name WHERE email = ?";
+        $testemail = "12345#$@gmail.com";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(1, $testemail);
+        $stmt->execute();
+        
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        extract($row);
+        $num = $stmt->rowCount();
+        return $address;
+    }
     //**check if given email exist in the database
-    function emailExists(){
+    function emailExists($email=null){
     
         //**query to check if email exists
         $query = "SELECT id, firstname, lastname, access_level, password, status
-                FROM " . $this->table_name . "
+                FROM $this->table_name 
                 WHERE email = ?
                 LIMIT 0,1";
     
@@ -41,7 +57,7 @@ class User{
         $stmt = $this->conn->prepare( $query );
     
         //**sanitize
-        $this->email=htmlspecialchars(strip_tags($this->email), ENT_QUOTES, 'UTF-8');
+        $this->email= (!empty($email)) ? safeinputs($email, ENT_QUOTES, "UTF-8") : safeinputs($this->email);
     
         //**bind given email value
         $stmt->bindParam(1, $this->email);
@@ -57,14 +73,21 @@ class User{
     
             //**get record details / values
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+            extract($row);
             //**assign values to object properties
-            $this->id = $row['id'];
-            $this->firstname = $row['firstname'];
-            $this->lastname = $row['lastname'];
-            $this->access_level = $row['access_level'];
-            $this->password = $row['password'];
-            $this->status = $row['status'];
+            $this->id = $id;
+            $this->firstname = $firstname;
+            $this->lastname = $lastname;
+            $this->access_level = $access_level;
+            $this->password = $password;
+            $this->status = $status;
+            //** the default original way but more bloated */
+            // $this->id = $row['id'];
+            // $this->firstname = $row['firstname'];
+            // $this->lastname = $row['lastname'];
+            // $this->access_level = $row['access_level'];
+            // $this->password = $row['password'];
+            // $this->status = $row['status'];
     
             //**return true because email exists in the database
             return true;
@@ -97,15 +120,15 @@ class User{
         $stmt = $this->conn->prepare($query);
     
         //**sanitize
-        $this->firstname=htmlspecialchars(strip_tags($this->firstname), ENT_QUOTES, 'UTF-8');
-        $this->lastname=htmlspecialchars(strip_tags($this->lastname), ENT_QUOTES, 'UTF-8');
-        $this->email=htmlspecialchars(strip_tags($this->email), ENT_QUOTES, 'UTF-8');
-        $this->contact_number=htmlspecialchars(strip_tags($this->contact_number), ENT_QUOTES, 'UTF-8');
-        $this->address=htmlspecialchars(strip_tags($this->address), ENT_QUOTES, 'UTF-8');
-        $this->password=htmlspecialchars(strip_tags($this->password), ENT_QUOTES, 'UTF-8');
-        $this->access_level=htmlspecialchars(strip_tags($this->access_level), ENT_QUOTES, 'UTF-8');
-        $this->access_code=htmlspecialchars(strip_tags($this->access_code), ENT_QUOTES, 'UTF-8');
-        $this->status=htmlspecialchars(strip_tags($this->status), ENT_QUOTES, 'UTF-8');
+        $this->firstname = safeinputs($this->firstname);
+        $this->lastname = safeinputs($this->lastname);
+        $this->email = safeinputs($this->email);
+        $this->contact_number = safeinputs($this->contact_number);
+        $this->address = safeinputs($this->address);
+        $this->password = safeinputs($this->password);
+        $this->access_level = safeinputs($this->access_level);
+        $this->access_code = safeinputs($this->access_code);
+        $this->status = safeinputs($this->status);
     
         //**bind the values
         $stmt->bindParam(':firstname', $this->firstname);
@@ -150,6 +173,7 @@ class User{
                     lastname,
                     email,
                     contact_number,
+                    address,
                     access_level,
                     created
                 FROM " . $this->table_name . "
@@ -174,7 +198,7 @@ class User{
     public function countAll(){
     
         //**query to select all user records
-        $query = "SELECT id FROM " . $this->table_name . "";
+        $query = "SELECT id FROM $this->table_name";
     
         //**prepare query statement
         $stmt = $this->conn->prepare($query);
@@ -189,18 +213,48 @@ class User{
         return $num;
     }
 
+    //** function to validate the name inputs
     public function validName($name){
         if (!preg_match('/[^A-Za-z]/', $name)) {//**'/[^a-z\d]/i' should also work. 
-        //**string contains only english letters & digits
+        //**string contains only english letters
             return true;
         }
         return false;
     }
 
+    //** function to validate phone number
     public function validPhone($phone){
+        // ** we only allow numbers, +, -, and x
         if(preg_match('/^[0-9+x()-]+$/', $phone)){
             return true;
         }
+        return false;
+    }
+
+    //**used in email verification feature
+    function updateStatusByAccessCode(){
+    
+        //**update query
+        $query = "UPDATE $this->table_name 
+                SET status = :status
+                WHERE access_code = :access_code";
+    
+        //**prepare the query
+        $stmt = $this->conn->prepare($query);
+    
+        //**sanitize
+        $this->status = safeinputs($this->status);
+        $this->access_code = htmlspecialchars($this->access_code);
+    
+        //**bind the values from the form
+        $stmt->bindParam(':status', $this->status);
+        $stmt->bindParam(':access_code', $this->access_code);
+    
+        //**execute the query
+        if($stmt->execute()){
+            return true;
+        }
+    
         return false;
     }
 }

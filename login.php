@@ -38,7 +38,7 @@ if($_POST){
         $_SESSION['logged_in'] = true;
         $_SESSION['user_id'] = $user->id;
         $_SESSION['access_level'] = $user->access_level;
-        $_SESSION['firstname'] = htmlspecialchars($user->firstname, ENT_QUOTES, 'UTF-8') ;
+        $_SESSION['firstname'] = $user->firstname;
         $_SESSION['lastname'] = $user->lastname;
     
         //**if access level is 'Admin', redirect to admin section

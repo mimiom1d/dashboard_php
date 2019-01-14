@@ -39,5 +39,5 @@ echo "<div class='col-md-12'>";
 echo "</div>";
  
 //**include page footer HTML
-include_once "templates/layout_foot.php";
+include_once "templates/layout_footer.php";
 ?>
